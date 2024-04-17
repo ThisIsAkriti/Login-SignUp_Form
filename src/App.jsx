@@ -1,114 +1,68 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react";
+import amz from "./logo/amz.jpg"
+import checkValidData from "./utils/validate";
 
 function App() {
- 
-  const [length , setLength] = useState(6);
-  const [numPresent , setNumPresent] = useState(false);
-  const [charPresent , setCharPresent] = useState(false);
-  const [password , setPassword] = useState("");
 
-  const passwordRef = useRef(null);
+  const [islogin , setIsLogin] = useState(true);
+  const [errorMsg , setErrorMsg] = useState()
+  const toggleLoginForm = () => {
+    setIsLogin(!islogin);
+  }
 
-  const passwordGenerator = useCallback(() => {
-    let pass = "";
-    let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  const email = useRef(null);
+  const password = useRef(null);
+  const handleButtonClick = () => {
 
-    if(numPresent) str += "012334456789";
-    if(charPresent) str += "!@#$%^&*()_+~"
-    
-    for(let i = 1; i <= length ; i++){
-      let char = Math.floor(Math.random() * str.length + 1);
-      pass += str.charAt(char); // give random char from str.
-    }
-    setPassword(pass);
+    const message = checkValidData(email.current.value , password.current.value)
+    setErrorMsg(message);  
+  }
 
-  } , [length , numPresent , charPresent , setPassword]);
-
-  const copyPassword = useCallback(() => {
-    passwordRef.current?.select();
-    //passwordRef.current?.setSelectionRange(0,20); (select only first 20 chars of password)
-    window.navigator.clipboard.writeText(password);
-  } , [ password])
-  
-  useEffect(() => {
-    passwordGenerator();
-  } , [length , numPresent , charPresent , passwordGenerator])
- 
-  return (
-    <div className="border-gray-700  border-2 shadow-md shadow-gray-700 w-full max-w-max px-6 mt-40 py-4 mx-auto 
-    rounded-lg bg-gray-900  overflow-hidden">
-     <div className='font-semibold text-3xl mt-10 text-white text-center  '>Password Generator</div>
-
-     <div className="mt-10 mb-4">
-
-        <div className="flex my-4">
-
-          <input 
-            type="text"
-            value={password}
-            className="outline-none w-full py-1 px-4 rounded-lg"
-            placeholder="Password"
-            readOnly
-            ref={passwordRef}
+  return(
+    <>
+      <div className="flex mt-6 justify-center">
+        <img className=" w-40"  src={amz} alt="Logo" />
+      </div>
+      
+      <div className="flex justify-center">
+        <div className=" text-black absolute border border-gray-300 shadow-md rounded-md w-3/12 p-8 ">
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            className="flex flex-col " >
+            <h1 className="text-center text-3xl border-b border-b-gray-300 pb-4  ">{islogin ? "Sign In" : "Create an account "}</h1>
             
-          />
-
-          <button className="bg-blue-600 shadow-2xl shadow-black text-white text-lg font-semibold px-2 rounded-lg
-           ml-2 active:bg-blue-700 active:mr-1
-          "
-          onClick = {copyPassword}>Copy</button>
-
-        </div>
-    
-        <div className="flex text-sm gap-x-2">
-          <div className="flex items-center gap-x-1">
-            <input 
-            type="range"
-            min={6}
-            max={100}
-            value={length}
-            className="cursor-pointer"
-            onChange={(e) => {setLength(e.target.value)}}
-            />
-            <label 
-             className=" text-blue-500 font-semibold text-lg"> length: {length}
-            </label>
-
-          </div>
-
-          <div>
+            {!islogin && <input
+            className="p-2 pl-4 bg-slate-200 mt-6 rounded-md mb-3"
+            type="text" placeholder="Your Name" name="name"  
+            />}
+            
             <input
-              type="checkbox" 
-              defaultChecked = {numPresent}
-              id="numberInput"
-              onChange={() => {
-                setNumPresent((prev) => !prev);
-              }}
+            ref={email}
+            className="p-2 pl-4 bg-slate-200 mt-4 rounded-md mb-3"
+            type="text" placeholder="Email Address"
+          
             />
-            <label 
-            htmlFor="NumbersInput"
-             className=" text-blue-500 font-semibold text-lg"> Numbers
-            </label>
-          </div>
-
-          <div>
-            <input
-              type="checkbox" 
-              defaultChecked = {charPresent}
-              id="charInput"
-              onChange={() => {
-                setCharPresent((prev) => !prev);
-              }}
+          
+            
+             <input
+            className="p-2 pl-4 bg-slate-200 mt-4 rounded-md mb-3"
+            type="text" placeholder="Password"
+             ref={password}
             />
-            <label 
-            htmlFor="CharacterInput"
-             className=" text-blue-500 font-semibold text-lg"> characters
-            </label>
-          </div>
         
+            <p className="text-red-700 font-semibold">{errorMsg}</p>
+            <button className=" mt-4 bg-orange-400 p-2 rounded-md font-semibold text-lg mb-2"
+             onClick={handleButtonClick}>{islogin? "Sign In" : "Create an account"}</button>
+            <p className=" cursor-pointer mt-3 mb-3"
+              onClick={toggleLoginForm}
+              >
+                {islogin? "Or Create an account" : "Already registered? Sign In"} 
+            </p>
+              
+          </form>
         </div>
       </div>
-    </ div>
+    </>
   )
 }
 
