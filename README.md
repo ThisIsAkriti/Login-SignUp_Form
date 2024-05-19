@@ -1,5 +1,5 @@
 # LogIn/SignUp Page
-### Created Using React + vite
+### Created Using React + vite + tailwind + redux 
 - Used amazon logo
 - Used regex for password and email validation✅
 - Used firebase to deploy the project 
